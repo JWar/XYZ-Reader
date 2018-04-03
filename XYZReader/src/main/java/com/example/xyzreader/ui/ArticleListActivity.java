@@ -7,7 +7,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.Loader;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.RecyclerView;
@@ -21,6 +24,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
@@ -57,18 +61,34 @@ public class ArticleListActivity extends ActionBarActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article_list);
 
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+
+//        mToolbar = (Toolbar) findViewById(R.id.toolbar);
 
 
-        final View toolbarContainerView = findViewById(R.id.toolbar_container);
+//        final View toolbarContainerView = findViewById(R.id.toolbar_container);
+        ConnectivityManager connectivityManager = (ConnectivityManager)getApplicationContext()
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        if(networkInfo != null && networkInfo.isConnectedOrConnecting()) {
 
-        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
+            mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
+            mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    refresh();
+                }
+            });
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        getLoaderManager().initLoader(0, null, this);
+            mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+            getLoaderManager().initLoader(0, null, this);
 
-        if (savedInstanceState == null) {
-            refresh();
+            if (savedInstanceState == null) {
+                refresh();
+            }
+        } else {
+            View view = findViewById(R.id.activity_article_list_base_layout);
+            String message = getResources().getString(R.string.connection_failure);
+            Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
         }
     }
 
@@ -102,7 +122,9 @@ public class ArticleListActivity extends ActionBarActivity implements
     };
 
     private void updateRefreshingUI() {
-        mSwipeRefreshLayout.setRefreshing(mIsRefreshing);
+        if (mSwipeRefreshLayout!=null) {
+            mSwipeRefreshLayout.setRefreshing(mIsRefreshing);
+        }
     }
 
     @Override

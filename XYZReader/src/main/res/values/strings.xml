@@ -9,4 +9,8 @@
 
     <string name="up">Up</string>
 
+    <string name="logo_desc">Logo</string>
+
+    <string name="connection_failure">Problem connecting&#8230;</string>
+
 </resources>
