@@ -10,7 +10,9 @@
     <string name="up">Up</string>
 
     <string name="logo_desc">Logo</string>
+    <string name="photo_desc">Article photo</string>
 
     <string name="connection_failure">Problem connecting&#8230;</string>
+    <string name="data_failure">Problem getting data&#8230;</string>
 
 </resources>
